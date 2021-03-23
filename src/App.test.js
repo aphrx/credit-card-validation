@@ -11,6 +11,7 @@ const valid_values = {
   cardPostalCode: "L6R 3K5",
 };
 
+// Complete form and submit
 async function fillForm(values, page) {
   await page.click("input#cardName");
   await page.type("input#cardName", values.cardName);
@@ -27,7 +28,8 @@ async function fillForm(values, page) {
   await page.click("button#validateButton");
 }
 
-function emptyField(index, field){
+// Create values object depending on which field is empty
+function emptyField(index, field) {
   let values = Object.create(valid_values);
   switch (index) {
     case 0:
@@ -51,7 +53,7 @@ function emptyField(index, field){
     default:
       break;
   }
-  return values
+  return values;
 }
 
 describe("test card animations", () => {
@@ -118,7 +120,7 @@ describe("test empty fields", () => {
   });
 
   test.each(errors)("submit empty field ", async (index, err) => {
-    let values = emptyField(index, "")
+    let values = emptyField(index, "");
     await fillForm(values, page);
 
     let alertMessage = await page.$eval(
@@ -162,7 +164,7 @@ describe("test invalid fields", () => {
     [1, "Credit card number is invalid", "411111111111111111111111"],
     [2, "Credit card type is invalid", "VC"],
     [3, "Credit card expiration date is invalid", "0505/20222022"],
-    [4, "Credit card CVC is invalid",  "0"],
+    [4, "Credit card CVC is invalid", "0"],
     [5, "Credit card postal code is invalid", "0"],
   ];
 
@@ -173,7 +175,7 @@ describe("test invalid fields", () => {
   });
 
   test.each(errors)("submit empty field ", async (index, err, val) => {
-    let values = emptyField(index, val)
+    let values = emptyField(index, val);
     await fillForm(values, page);
 
     let alertMessage = await page.$eval(
@@ -186,4 +188,4 @@ describe("test invalid fields", () => {
   afterEach(async () => {
     await browser.close();
   });
-})
+});

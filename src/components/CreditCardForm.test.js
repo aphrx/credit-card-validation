@@ -22,6 +22,7 @@ const null_values = {
   cardPostalCode: null,
 };
 
+// Generate values to be sent and expected messages to be recieved
 function validations(index, field, msg) {
   let vals = {
     message: "An unknown error occured. Please try again later",
@@ -43,7 +44,7 @@ function validations(index, field, msg) {
       break;
     case 1:
       vals.cnumber = false;
-      if(field === ""){
+      if (field === "") {
         vals.ctype = false;
       }
       values.cardNumber = field;
@@ -129,7 +130,7 @@ describe("test empty fields", () => {
     [2, "", "Credit card type is not complete"],
     [3, "", "Credit card expiration date is not complete"],
     [4, "", "Credit card CVC is not complete"],
-    [5, "", "Credit card postal code is not complete"]
+    [5, "", "Credit card postal code is not complete"],
   ];
 
   test("test null card", () => {
@@ -146,13 +147,10 @@ describe("test empty fields", () => {
     });
   });
 
-  test.each(messages)(
-    "test empty card field",
-    (index, field, messages) => {
-      let values = validations(index, field, messages);
-      expect(validateInfo(values[0])).toStrictEqual(values[1]);
-    }
-  );
+  test.each(messages)("test empty card field", (index, field, messages) => {
+    let values = validations(index, field, messages);
+    expect(validateInfo(values[0])).toStrictEqual(values[1]);
+  });
 });
 
 describe("test valid fields", () => {
@@ -178,15 +176,12 @@ describe("test invalid fields", () => {
     [1, "Credit card number is invalid", "411111111111111111111111"],
     [2, "Credit card type is invalid", "VC"],
     [3, "Credit card expiration date is invalid", "0505/20222022"],
-    [4, "Credit card CVC is invalid",  "0"],
+    [4, "Credit card CVC is invalid", "0"],
     [5, "Credit card postal code is invalid", "0"],
   ];
 
-  test.each(errors)(
-    "test empty card field",
-    (index, messages, field) => {
-      let values = validations(index, field, messages);
-      expect(validateInfo(values[0])).toStrictEqual(values[1]);
-    }
-  );
+  test.each(errors)("test empty card field", (index, messages, field) => {
+    let values = validations(index, field, messages);
+    expect(validateInfo(values[0])).toStrictEqual(values[1]);
+  });
 });
