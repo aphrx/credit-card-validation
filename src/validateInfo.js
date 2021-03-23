@@ -29,11 +29,11 @@ export default function validateInfo(values) {
 
   //Card CVV expiration
   if (values.cardSecurityCode === null || !values.cardSecurityCode.trim()) {
-    errors.message = "Credit card CVV is not complete";
+    errors.message = "Credit card CVC is not complete";
   } else if (creditCard.cvv.isValid) {
     errors.ccvv = true;
   } else {
-    errors.message = "Credit card CVV is invalid";
+    errors.message = "Credit card CVC is invalid";
   }
 
   //Card Expiration Verification

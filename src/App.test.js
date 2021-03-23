@@ -27,6 +27,33 @@ async function fillForm(values, page) {
   await page.click("button#validateButton");
 }
 
+function emptyField(index, field){
+  let values = Object.create(valid_values);
+  switch (index) {
+    case 0:
+      values.cardName = field;
+      break;
+    case 1:
+      values.cardNumber = field;
+      break;
+    case 2:
+      values.cardType = field;
+      break;
+    case 3:
+      values.cardExpiration = field;
+      break;
+    case 4:
+      values.cardSecurityCode = field;
+      break;
+    case 5:
+      values.cardPostalCode = field;
+      break;
+    default:
+      break;
+  }
+  return values
+}
+
 describe("test card animations", () => {
   const field = [
     "input#cardName",
@@ -66,6 +93,15 @@ describe("test card animations", () => {
 });
 
 describe("test empty fields", () => {
+  const errors = [
+    [0, "Cardholder name is not complete"],
+    [1, "Credit card number is not complete"],
+    [2, "Credit card type is not complete"],
+    [3, "Credit card expiration date is not complete"],
+    [4, "Credit card CVC is not complete"],
+    [5, "Credit card postal code is not complete"],
+  ];
+
   beforeEach(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
@@ -81,76 +117,15 @@ describe("test empty fields", () => {
     expect(alertMessage).toBe("Cardholder name is not complete");
   });
 
-  test("submit empty card name", async () => {
-    let values = Object.create(valid_values);
-    values.cardName = "";
+  test.each(errors)("submit empty field ", async (index, err) => {
+    let values = emptyField(index, "")
     await fillForm(values, page);
 
     let alertMessage = await page.$eval(
       "div#alertMessage",
       (alert) => alert.textContent
     );
-    expect(alertMessage).toBe("Cardholder name is not complete");
-  });
-
-  test("submit empty card number", async () => {
-    let values = Object.create(valid_values);
-    values.cardNumber = "";
-    await fillForm(values, page);
-
-    let alertMessage = await page.$eval(
-      "div#alertMessage",
-      (alert) => alert.textContent
-    );
-    expect(alertMessage).toBe("Credit card number is not complete");
-  });
-
-  test("submit empty card type", async () => {
-    let values = Object.create(valid_values);
-    values.cardType = "";
-    await fillForm(values, page);
-
-    let alertMessage = await page.$eval(
-      "div#alertMessage",
-      (alert) => alert.textContent
-    );
-    expect(alertMessage).toBe("Credit card type is not complete");
-  });
-
-  test("submit empty card exp", async () => {
-    let values = Object.create(valid_values);
-    values.cardExpiration = "";
-    await fillForm(values, page);
-
-    let alertMessage = await page.$eval(
-      "div#alertMessage",
-      (alert) => alert.textContent
-    );
-    expect(alertMessage).toBe("Credit card expiration date is not complete");
-  });
-
-  test("submit empty card cvv", async () => {
-    let values = Object.create(valid_values);
-    values.cardSecurityCode = "";
-    await fillForm(values, page);
-
-    let alertMessage = await page.$eval(
-      "div#alertMessage",
-      (alert) => alert.textContent
-    );
-    expect(alertMessage).toBe("Credit card CVV is not complete");
-  });
-
-  test("submit empty postal code", async () => {
-    let values = Object.create(valid_values);
-    values.cardPostalCode = "";
-    await fillForm(values, page);
-
-    let alertMessage = await page.$eval(
-      "div#alertMessage",
-      (alert) => alert.textContent
-    );
-    expect(alertMessage).toBe("Credit card postal code is not complete");
+    expect(alertMessage).toBe(err);
   });
 
   afterEach(async () => {
@@ -182,85 +157,33 @@ describe("test valid fields", () => {
 });
 
 describe("test invalid fields", () => {
+  const errors = [
+    [0, "Cardholder name is invalid", "4111111111111111"],
+    [1, "Credit card number is invalid", "411111111111111111111111"],
+    [2, "Credit card type is invalid", "VC"],
+    [3, "Credit card expiration date is invalid", "0505/20222022"],
+    [4, "Credit card CVC is invalid",  "0"],
+    [5, "Credit card postal code is invalid", "0"],
+  ];
+
   beforeEach(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
     await page.goto("http://localhost:3000/");
   });
 
-  test("submit invalid name", async () => {
-    let values = Object.create(valid_values);
-    values.cardName = "4111111111111111";
+  test.each(errors)("submit empty field ", async (index, err, val) => {
+    let values = emptyField(index, val)
     await fillForm(values, page);
 
     let alertMessage = await page.$eval(
       "div#alertMessage",
       (alert) => alert.textContent
     );
-    expect(alertMessage).toBe("Cardholder name is invalid");
-  });
-
-  test("submit invalid number", async () => {
-    let values = Object.create(valid_values);
-    values.cardNumber = "411111111111111111111111";
-    await fillForm(values, page);
-
-    let alertMessage = await page.$eval(
-      "div#alertMessage",
-      (alert) => alert.textContent
-    );
-    expect(alertMessage).toBe("Credit card number is invalid");
-  });
-
-  test("submit invalid type", async () => {
-    let values = Object.create(valid_values);
-    values.cardType = "VC";
-    await fillForm(values, page);
-
-    let alertMessage = await page.$eval(
-      "div#alertMessage",
-      (alert) => alert.textContent
-    );
-    expect(alertMessage).toBe("Credit card type is invalid");
-  });
-
-  test("submit invalid expiration", async () => {
-    let values = Object.create(valid_values);
-    values.cardExpiration = "0505/20222022";
-    await fillForm(values, page);
-
-    let alertMessage = await page.$eval(
-      "div#alertMessage",
-      (alert) => alert.textContent
-    );
-    expect(alertMessage).toBe("Credit card expiration date is invalid");
-  });
-
-  test("submit invalid cvv", async () => {
-    let values = Object.create(valid_values);
-    values.cardSecurityCode = "050520222022";
-    await fillForm(values, page);
-
-    let alertMessage = await page.$eval(
-      "div#alertMessage",
-      (alert) => alert.textContent
-    );
-    expect(alertMessage).toBe("Credit card CVV is invalid");
-  });
-
-  test("submit invalid postal code", async () => {
-    let values = Object.create(valid_values);
-    values.cardPostalCode = "0";
-    await fillForm(values, page);
-
-    let alertMessage = await page.$eval(
-      "div#alertMessage",
-      (alert) => alert.textContent
-    );
-    expect(alertMessage).toBe("Credit card postal code is invalid");
+    expect(alertMessage).toBe(err);
   });
 
   afterEach(async () => {
     await browser.close();
   });
-});
+})
