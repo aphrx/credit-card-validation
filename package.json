@@ -44,5 +44,11 @@
   },
   "devDependencies": {
     "puppeteer": "^8.0.0"
-  }
+  },
+  "jest": {
+    "collectCoverageFrom": [
+        "!src/index.js",
+        "!src/App.js"
+      ]
+    }
 }
