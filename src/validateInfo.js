@@ -3,14 +3,15 @@ import valid from "card-validator";
 export default function validateInfo(values) {
   let errors = {};
   let creditCard = valid.number(values.cardNumber);
+
   creditCard.expirationDate = valid.expirationDate(values.cardExpiration);
   creditCard.cvv = valid.cvv(values.cardSecurityCode);
   creditCard.cardholderName = valid.cardholderName(values.cardName);
   creditCard.postalCode = valid.postalCode(values.cardPostalCode);
 
-
   errors.show = true;
   errors.variant = "danger";
+  errors.message = "An unknown error occured. Please try again later"
   errors.cname = false;
   errors.cnumber = false;
   errors.ctype = false;
