@@ -1,16 +1,25 @@
 import { useState } from 'react'
+import validateInfo from './validateInfo';
 
-const useForm = valid => {
+const useForm = () => {
     const [values, setValues] = useState({
         cardName: '',
         cardNumber: '',
         cardType: '',
         cardExpiration: '',
         cardSecurityCode: '',
-        cardPostalCode: ''
+        cardPostalCode: '',
+        focus: ''
     })
 
     const [errors, setErrors] = useState({})
+
+    const handleFocus = (e) => {
+        setValues({ 
+            ...values,
+            focus: (e.target.name === 'cardSecurityCode') ? 'cvc' : e.target.name
+        });
+    }
 
     const handleChange = e => {
         const { name, value } = e.target
@@ -18,25 +27,14 @@ const useForm = valid => {
             ...values,
             [name]: value
         })
-        console.log(value)
     }
 
     const handleSubmit = e => {
         e.preventDefault()
-
-        var creditCard = valid.number(values.cardNumber)
-
-        creditCard.expirationDate = valid.expirationDate(values.cardExpiration)
-        creditCard.cvv = valid.cvv(values.cardSecurityCode)
-        creditCard.cardholderName = valid.cardholderName(values.cardName)
-        creditCard.postalCode = valid.postalCode(values.cardPostalCode)
-        console.log(creditCard.isValid);
-        console.log(creditCard)
-
-        setErrors(creditCard.isValid);
+        setErrors(validateInfo(values))
     };
-
-    return { handleChange, values, handleSubmit, errors };
+    
+    return { handleChange, handleFocus, handleSubmit, values, errors };
 };
 
-export default useForm;
+export default useForm; 
